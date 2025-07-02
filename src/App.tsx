@@ -10,6 +10,8 @@ import Hostels from "./pages/Hostels";
 import HostelDetails from "./pages/HostelDetails";
 import Auth from "./pages/Auth";
 import StudentDashboard from "./pages/StudentDashboard";
+import EditProfile from "./pages/EditProfile";
+
 import LandlordDashboard from "./pages/LandlordDashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import About from "./pages/About";
@@ -47,6 +49,8 @@ const App = () => (
               <Route path="/login" element={<Auth />} />
               <Route path="/register" element={<Auth />} />
               <Route path="/student-dashboard" element={<StudentDashboard />} />
+              <Route path="/edit-student-profile" element={<EditProfile />} />
+
               <Route path="/landlord-dashboard" element={<LandlordDashboard />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/about" element={<About />} />

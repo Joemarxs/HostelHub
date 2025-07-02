@@ -1,5 +1,5 @@
-
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +22,12 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate(); 
+  const handleViewDetails = (hostelId: number) => {
+    navigate(`/hostel/${hostelId}`);
+  };
+
+
   const [activeBookings] = useState([
     {
       id: 1,
@@ -156,52 +162,60 @@ const StudentDashboard = () => {
           </TabsContent>
 
           {/* Bookings Tab */}
-          <TabsContent value="bookings">
-            <div className="space-y-6">
-              {activeBookings.map((booking) => (
-                <Card key={booking.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-xl">{booking.hostelName}</CardTitle>
-                        <div className="flex items-center gap-2 text-gray-600 mt-1">
-                          <MapPin className="h-4 w-4" />
-                          {booking.location}
+          {savedHostels.map((hostel) => (
+            <TabsContent key={hostel.id} value="bookings">
+              <div className="space-y-6">
+                {activeBookings
+                  .filter((booking) => booking.id === hostel.id) // only show bookings for this hostel
+                  .map((booking) => (
+                    <Card key={booking.id}>
+                      <CardHeader>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle className="text-xl">{booking.hostelName}</CardTitle>
+                            <div className="flex items-center gap-2 text-gray-600 mt-1">
+                              <MapPin className="h-4 w-4" />
+                              {booking.location}
+                            </div>
+                          </div>
+                          <Badge className="bg-green-100 text-green-800">
+                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                          </Badge>
                         </div>
-                      </div>
-                      <Badge className="bg-green-100 text-green-800">
-                        {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-600">Room Type</p>
-                        <p className="font-semibold">{booking.roomType}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Check-in</p>
-                        <p className="font-semibold">{booking.checkIn}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Monthly Rent</p>
-                        <p className="font-semibold">KES {booking.monthlyRent.toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Next Payment</p>
-                        <p className="font-semibold">{booking.nextPayment}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3 mt-4">
-                      <Button variant="outline">View Details</Button>
-                      <Button>Pay Rent</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div>
+                            <p className="text-sm text-gray-600">Room Type</p>
+                            <p className="font-semibold">{booking.roomType}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">Check-in</p>
+                            <p className="font-semibold">{booking.checkIn}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">Monthly Rent</p>
+                            <p className="font-semibold">KES {booking.monthlyRent.toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">Next Payment</p>
+                            <p className="font-semibold">{booking.nextPayment}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 mt-4">
+                          <Button onClick={() => handleViewDetails(hostel.id)} variant="outline">
+                            View Details
+                          </Button>
+                          <Button>Pay Rent</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+              </div>
+            </TabsContent>
+          ))}
+
+
 
           {/* Saved Hostels Tab */}
           <TabsContent value="saved">
@@ -229,7 +243,7 @@ const StudentDashboard = () => {
                       <span className="font-bold text-primary">{hostel.price}/month</span>
                     </div>
                     <div className="flex gap-2 mt-3">
-                      <Button size="sm" className="flex-1">View Details</Button>
+                      <Button onClick={() => handleViewDetails(hostel.id)} size="sm" className="flex-1">View Details</Button>
                       <Button size="sm" variant="outline">Remove</Button>
                     </div>
                   </CardContent>
@@ -293,11 +307,15 @@ const StudentDashboard = () => {
                       <p className="mt-1 p-2 bg-gray-50 rounded">{user?.email}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">User Type</label>
-                      <p className="mt-1 p-2 bg-gray-50 rounded capitalize">{user?.userType}</p>
+                      <label className="text-sm font-medium text-gray-700">Phone Number</label>
+                      <p className="mt-1 p-2 bg-gray-50 rounded">{user?.phone}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">University/College</label>
+                      <p className="mt-1 p-2 bg-gray-50 rounded">{user?.university}</p>
                     </div>
                   </div>
-                  <Button>Edit Profile</Button>
+                  <Button onClick={() => navigate("/edit-student-profile")}>Edit Profile</Button>
                 </div>
               </CardContent>
             </Card>
