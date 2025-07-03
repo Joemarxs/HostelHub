@@ -6,6 +6,8 @@ interface User {
   email: string;
   firstName: string;
   lastName: string;
+  phone: string,
+  university: string,
   userType: 'student' | 'owner';
 }
 
@@ -42,6 +44,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         firstName: 'John',
         lastName: 'Doe',
+        phone: '0734842366',
+        university: 'Karatina',
         userType
       };
       
@@ -66,6 +70,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email: userData.email,
         firstName: userData.firstName,
         lastName: userData.lastName,
+        phone: userData.phone,
+        university:userData.university,
         userType: userData.userType || 'student'
       };
       
