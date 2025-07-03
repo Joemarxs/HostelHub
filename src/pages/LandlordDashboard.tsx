@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -6,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { 
   Building, 
   Users, 
@@ -17,12 +17,22 @@ import {
   MapPin,
   Star,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Phone,
+  Mail,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Filter
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 const LandlordDashboard = () => {
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [bookingFilter, setBookingFilter] = useState('all');
+  
   const [hostels] = useState([
     {
       id: 1,
@@ -48,22 +58,62 @@ const LandlordDashboard = () => {
     }
   ]);
 
-  const [bookingRequests] = useState([
+  const [bookingRequests, setBookingRequests] = useState([
     {
       id: 1,
       studentName: "Jane Doe",
+      studentEmail: "jane.doe@student.ac.ke",
+      studentPhone: "+254712345678",
       hostelName: "Sunrise Student Lodge",
       roomType: "Single Room",
       requestDate: "2024-01-10",
-      status: "pending"
+      moveInDate: "2024-02-01",
+      duration: "1 semester",
+      amount: 8500,
+      status: "pending",
+      university: "University of Nairobi"
     },
     {
       id: 2,
       studentName: "John Smith",
+      studentEmail: "john.smith@student.ac.ke",
+      studentPhone: "+254723456789",
       hostelName: "Green Valley Hostel",
       roomType: "Shared Room",
       requestDate: "2024-01-08",
-      status: "pending"
+      moveInDate: "2024-01-15",
+      duration: "6 months",
+      amount: 6000,
+      status: "pending",
+      university: "Kenyatta University"
+    },
+    {
+      id: 3,
+      studentName: "Mary Johnson",
+      studentEmail: "mary.johnson@student.ac.ke",
+      studentPhone: "+254734567890",
+      hostelName: "Sunrise Student Lodge",
+      roomType: "Single Room",
+      requestDate: "2024-01-05",
+      moveInDate: "2024-01-20",
+      duration: "1 year",
+      amount: 8500,
+      status: "accepted",
+      university: "Strathmore University"
+    },
+    {
+      id: 4,
+      studentName: "Peter Wilson",
+      studentEmail: "peter.wilson@student.ac.ke",
+      studentPhone: "+254745678901",
+      hostelName: "Green Valley Hostel",
+      roomType: "Shared Room",
+      requestDate: "2024-01-03",
+      moveInDate: "2024-01-10",
+      duration: "3 months",
+      amount: 6000,
+      status: "declined",
+      university: "USIU"
     }
   ]);
 
@@ -91,6 +141,44 @@ const LandlordDashboard = () => {
   const occupiedRooms = hostels.reduce((sum, hostel) => sum + hostel.occupiedRooms, 0);
   const occupancyRate = Math.round((occupiedRooms / totalRooms) * 100);
 
+  const handleBookingAction = (bookingId: number, action: 'accept' | 'decline') => {
+    setBookingRequests(prev => 
+      prev.map(booking => 
+        booking.id === bookingId 
+          ? { ...booking, status: action === 'accept' ? 'accepted' : 'declined' }
+          : booking
+      )
+    );
+    console.log(`Booking ${bookingId} ${action}ed`);
+  };
+
+  const handleViewAllBookings = () => {
+    setActiveTab('bookings');
+  };
+
+  const filteredBookings = bookingRequests.filter(booking => {
+    if (bookingFilter === 'all') return true;
+    return booking.status === bookingFilter;
+  });
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'accepted': return 'bg-green-100 text-green-800';
+      case 'declined': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending': return <Clock className="h-4 w-4" />;
+      case 'accepted': return <CheckCircle className="h-4 w-4" />;
+      case 'declined': return <XCircle className="h-4 w-4" />;
+      default: return <AlertCircle className="h-4 w-4" />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -107,11 +195,11 @@ const LandlordDashboard = () => {
         </div>
 
         {/* Dashboard Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="properties">My Properties</TabsTrigger>
-            <TabsTrigger value="bookings">Booking Requests</TabsTrigger>
+            <TabsTrigger value="bookings">All Bookings</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
@@ -171,17 +259,21 @@ const LandlordDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Button className="flex items-center gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add New Property
+                  <Button asChild className="flex items-center gap-2">
+                    <Link to="/post-hostel">
+                      <Plus className="h-4 w-4" />
+                      Add New Property
+                    </Link>
                   </Button>
-                  <Button variant="outline" className="flex items-center gap-2">
+                  <Button variant="outline" className="flex items-center gap-2" onClick={handleViewAllBookings}>
                     <Eye className="h-4 w-4" />
                     View All Bookings
                   </Button>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" />
-                    Upgrade to Premium
+                  <Button variant="outline" className="flex items-center gap-2" asChild>
+                    <Link to="/premium">
+                      <TrendingUp className="h-4 w-4" />
+                      Upgrade to Premium
+                    </Link>
                   </Button>
                 </div>
               </CardContent>
@@ -277,30 +369,145 @@ const LandlordDashboard = () => {
             </div>
           </TabsContent>
 
-          {/* Booking Requests Tab */}
+          {/* Enhanced Booking Requests Tab */}
           <TabsContent value="bookings">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pending Booking Requests</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {bookingRequests.map((request) => (
-                    <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <p className="font-semibold">{request.studentName}</p>
-                        <p className="text-sm text-gray-600">{request.hostelName} - {request.roomType}</p>
-                        <p className="text-xs text-gray-500">Requested on {request.requestDate}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline">Decline</Button>
-                        <Button size="sm">Accept</Button>
-                      </div>
-                    </div>
-                  ))}
+            <div className="space-y-6">
+              <div className="flex justify-between items-center flex-wrap gap-4">
+                <h2 className="text-2xl font-bold">All Booking Requests</h2>
+                
+                {/* Filter Buttons */}
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  <div className="flex gap-1">
+                    <Button 
+                      size="sm" 
+                      variant={bookingFilter === 'all' ? 'default' : 'outline'}
+                      onClick={() => setBookingFilter('all')}
+                    >
+                      All ({bookingRequests.length})
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant={bookingFilter === 'pending' ? 'default' : 'outline'}
+                      onClick={() => setBookingFilter('pending')}
+                    >
+                      Pending ({bookingRequests.filter(b => b.status === 'pending').length})
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant={bookingFilter === 'accepted' ? 'default' : 'outline'}
+                      onClick={() => setBookingFilter('accepted')}
+                    >
+                      Accepted ({bookingRequests.filter(b => b.status === 'accepted').length})
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant={bookingFilter === 'declined' ? 'default' : 'outline'}
+                      onClick={() => setBookingFilter('declined')}
+                    >
+                      Declined ({bookingRequests.filter(b => b.status === 'declined').length})
+                    </Button>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+
+              <Card>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Student Details</TableHead>
+                        <TableHead>Property & Room</TableHead>
+                        <TableHead>Move-in Date</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredBookings.map((request) => (
+                        <TableRow key={request.id}>
+                          <TableCell>
+                            <div className="space-y-1">
+                              <p className="font-semibold">{request.studentName}</p>
+                              <p className="text-sm text-gray-600">{request.university}</p>
+                              <div className="flex items-center gap-2 text-xs text-gray-500">
+                                <Mail className="h-3 w-3" />
+                                <span>{request.studentEmail}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-xs text-gray-500">
+                                <Phone className="h-3 w-3" />
+                                <span>{request.studentPhone}</span>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              <p className="font-medium">{request.hostelName}</p>
+                              <p className="text-sm text-gray-600">{request.roomType}</p>
+                              <p className="text-xs text-gray-500">Duration: {request.duration}</p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-gray-400" />
+                              <span className="text-sm">{request.moveInDate}</span>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Requested: {request.requestDate}
+                            </p>
+                          </TableCell>
+                          <TableCell>
+                            <p className="font-bold">KES {request.amount.toLocaleString()}</p>
+                            <p className="text-xs text-gray-500">per month</p>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={`flex items-center gap-1 ${getStatusColor(request.status)}`}>
+                              {getStatusIcon(request.status)}
+                              {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {request.status === 'pending' ? (
+                              <div className="flex gap-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  onClick={() => handleBookingAction(request.id, 'decline')}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <XCircle className="h-4 w-4 mr-1" />
+                                  Decline
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => handleBookingAction(request.id, 'accept')}
+                                  className="text-green-600 hover:text-green-700"
+                                >
+                                  <CheckCircle className="h-4 w-4 mr-1" />
+                                  Accept
+                                </Button>
+                              </div>
+                            ) : (
+                              <span className="text-sm text-gray-500">
+                                {request.status === 'accepted' ? 'Approved' : 'Rejected'}
+                              </span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  
+                  {filteredBookings.length === 0 && (
+                    <div className="text-center py-8">
+                      <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-500">No booking requests found for the selected filter.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Payments Tab */}
