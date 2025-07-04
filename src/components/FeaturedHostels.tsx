@@ -1,3 +1,4 @@
+
 import { useNavigate } from 'react-router-dom';
 import { Star, MapPin, Wifi, Car, Utensils, Shield, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -114,7 +115,7 @@ const FeaturedHostels = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {allHostels.slice(0, 4).map((hostel) => (
-            <div key={hostel.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+            <div key={hostel.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col">
               <div className="relative">
                 <img 
                   src={hostel.image} 
@@ -132,17 +133,17 @@ const FeaturedHostels = () => {
                 </div>
               </div>
 
-              <div className="p-5">
+              <div className="p-5 flex-1 flex flex-col">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary transition-colors">
                   {hostel.name}
                 </h3>
                 
                 <div className="flex items-center text-gray-600 text-sm mb-3">
-                  <MapPin className="h-4 w-4 mr-1" />
+                  <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
                   {hostel.location}
                 </div>
 
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-1">
                   {hostel.description}
                 </p>
 
@@ -171,7 +172,7 @@ const FeaturedHostels = () => {
                 </div>
 
                 <Button 
-                  className="w-full bg-primary hover:bg-primary/90"
+                  className="w-full bg-primary hover:bg-primary/90 mt-auto"
                   onClick={() => handleViewDetails(hostel.id)}
                 >
                   <Eye className="h-4 w-4 mr-2" />

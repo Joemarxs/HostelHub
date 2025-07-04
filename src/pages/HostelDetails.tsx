@@ -1,6 +1,6 @@
 
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, MapPin, Wifi, Car, Utensils, Shield, Phone, Mail, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Wifi, Car, Utensils, Shield, Phone, Mail, MessageCircle, Calendar } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -68,6 +68,11 @@ const HostelDetails = () => {
         window.open(`https://wa.me/${hostel.ownerPhone.replace(/\s/g, '')}`);
         break;
     }
+  };
+
+  const handleBookNow = () => {
+    // For now, this will show an alert. In a real app, this would open a booking form
+    alert('Booking functionality will be implemented soon. Please contact the hostel directly for now.');
   };
 
   return (
@@ -162,20 +167,34 @@ const HostelDetails = () => {
 
               <p className="text-gray-700 mb-6">{hostel.description}</p>
 
-              {/* Contact Actions */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-                <Button onClick={() => handleContact('phone')} className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  Call
+              {/* Book Now Button - Primary Action */}
+              <div className="mb-6">
+                <Button 
+                  onClick={handleBookNow} 
+                  className="w-full bg-primary hover:bg-primary/90 text-white py-3 text-lg font-semibold"
+                >
+                  <Calendar className="h-5 w-5 mr-2" />
+                  Book Now
                 </Button>
-                <Button onClick={() => handleContact('email')} variant="outline" className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  Email
-                </Button>
-                <Button onClick={() => handleContact('whatsapp')} variant="outline" className="flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4" />
-                  WhatsApp
-                </Button>
+              </div>
+
+              {/* Contact Options */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Options</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <Button onClick={() => handleContact('phone')} variant="outline" className="flex items-center gap-2">
+                    <Phone className="h-4 w-4" />
+                    Call
+                  </Button>
+                  <Button onClick={() => handleContact('email')} variant="outline" className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Email
+                  </Button>
+                  <Button onClick={() => handleContact('whatsapp')} variant="outline" className="flex items-center gap-2">
+                    <MessageCircle className="h-4 w-4" />
+                    WhatsApp
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
