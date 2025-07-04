@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check, Star, Zap, Shield, Users, TrendingUp } from 'lucide-react';
-import MpesaPayment from '@/components/MpesaPayment';
+import PaymentSelector from '@/components/PaymentSelector';
 import {
   Dialog,
   DialogContent,
@@ -25,7 +24,7 @@ const Premium = () => {
     },
     {
       icon: <Zap className="h-8 w-8 text-accent" />,
-      title: "Enhanced Visibility",
+      title: "Enhanced Visibility", 
       description: "Featured in our homepage and category highlights"
     },
     {
@@ -63,8 +62,8 @@ const Premium = () => {
     setShowPayment(true);
   };
 
-  const handlePaymentSuccess = (transactionId: string) => {
-    console.log('Payment successful:', transactionId);
+  const handlePaymentSuccess = (transactionId: string, paymentMethod: string) => {
+    console.log('Payment successful:', { transactionId, paymentMethod });
     setShowPayment(false);
     setSelectedPlan(null);
     // Here you would typically update the user's subscription status
@@ -126,9 +125,9 @@ const Premium = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
               {/* Monthly Plan */}
-              <Card className="relative">
+              <Card className="relative h-full flex flex-col">
                 <CardHeader className="text-center pb-8">
                   <CardTitle className="text-2xl">Monthly Premium</CardTitle>
                   <div className="mt-4">
@@ -137,17 +136,17 @@ const Premium = () => {
                   </div>
                   <p className="text-gray-600 mt-2">Perfect for trying premium features</p>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 mb-8">
-                    {features.slice(0, 5).map((feature, index) => (
+                <CardContent className="flex-1 flex flex-col">
+                  <ul className="space-y-3 mb-8 flex-1">
+                    {features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-primary" />
+                        <Check className="h-5 w-5 text-primary flex-shrink-0" />
                         <span className="text-gray-700">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   <Button 
-                    className="w-full"
+                    className="w-full mt-auto"
                     onClick={() => handleSubscribe('Monthly Premium', 2500)}
                   >
                     Pay with M-Pesa
@@ -156,7 +155,7 @@ const Premium = () => {
               </Card>
 
               {/* Annual Plan */}
-              <Card className="relative border-2 border-primary">
+              <Card className="relative border-2 border-primary h-full flex flex-col">
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium">
                     Most Popular
@@ -170,17 +169,17 @@ const Premium = () => {
                   </div>
                   <p className="text-primary font-medium mt-2">Save KES 5,000 (17% off)</p>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 mb-8">
+                <CardContent className="flex-1 flex flex-col">
+                  <ul className="space-y-3 mb-8 flex-1">
                     {features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-primary" />
+                        <Check className="h-5 w-5 text-primary flex-shrink-0" />
                         <span className="text-gray-700">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   <Button 
-                    className="w-full"
+                    className="w-full mt-auto"
                     onClick={() => handleSubscribe('Annual Premium', 25000)}
                   >
                     Pay with M-Pesa
@@ -237,14 +236,14 @@ const Premium = () => {
         </div>
       </div>
 
-      {/* M-Pesa Payment Dialog */}
+      {/* Payment Dialog */}
       <Dialog open={showPayment} onOpenChange={setShowPayment}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Complete Your Payment</DialogTitle>
           </DialogHeader>
           {selectedPlan && (
-            <MpesaPayment
+            <PaymentSelector
               amount={selectedPlan.amount}
               description={`${selectedPlan.name} - HostelHub Kenya`}
               onPaymentSuccess={handlePaymentSuccess}
