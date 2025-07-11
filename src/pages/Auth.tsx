@@ -436,7 +436,7 @@ const Auth = () => {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              By signing up, you're joining over 2,000 students who trust HostelHub Kenya
+              By signing up, you're joining over 2,000 users who trust HostelHub Kenya
             </p>
           </div>
         </div>
