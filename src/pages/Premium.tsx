@@ -149,7 +149,7 @@ const Premium = () => {
                     className="w-full mt-auto"
                     onClick={() => handleSubscribe('Monthly Premium', 2500)}
                   >
-                    Pay with M-Pesa
+                    Clck to Pay
                   </Button>
                 </CardContent>
               </Card>
@@ -182,7 +182,7 @@ const Premium = () => {
                     className="w-full mt-auto"
                     onClick={() => handleSubscribe('Annual Premium', 25000)}
                   >
-                    Pay with M-Pesa
+                    Click to Pay 
                   </Button>
                 </CardContent>
               </Card>

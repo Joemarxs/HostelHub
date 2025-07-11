@@ -6,15 +6,13 @@ interface User {
   email: string;
   firstName: string;
   lastName: string;
-  phone: string,
-  university: string,
   userType: 'student' | 'owner';
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string, userType?: 'student' | 'owner') => Promise<boolean>;
   register: (userData: any) => Promise<boolean>;
   logout: () => void;
 }
@@ -31,21 +29,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return localStorage.getItem('user') !== null;
   });
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string, userType: 'student' | 'owner' = 'student'): Promise<boolean> => {
     try {
       // Simulate API call
-      console.log('Login attempt:', { email, password });
+      console.log('Login attempt:', { email, password, userType });
       
-      // Mock successful login - determine user type based on email for demo
-      const userType = email.includes('landlord') || email.includes('owner') ? 'owner' : 'student';
-      
+      // Mock successful login with the provided user type
       const mockUser: User = {
         id: '1',
         email,
         firstName: 'John',
         lastName: 'Doe',
-        phone: '0734842366',
-        university: 'Karatina',
         userType
       };
       
@@ -70,8 +64,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email: userData.email,
         firstName: userData.firstName,
         lastName: userData.lastName,
-        phone: userData.phone,
-        university:userData.university,
         userType: userData.userType || 'student'
       };
       

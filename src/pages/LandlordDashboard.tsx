@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Header from '@/components/Header';
+import LandlordDashboardHeader from '@/components/LandlordDashboardHeader';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,10 +26,12 @@ import {
   Filter
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from '@/hooks/use-toast';
 
 const LandlordDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [bookingFilter, setBookingFilter] = useState('all');
   
@@ -149,11 +151,31 @@ const LandlordDashboard = () => {
           : booking
       )
     );
+    toast({
+      title: `Booking ${action}ed`,
+      description: `The booking request has been ${action}ed successfully.`,
+    });
     console.log(`Booking ${bookingId} ${action}ed`);
   };
 
   const handleViewAllBookings = () => {
     setActiveTab('bookings');
+  };
+
+  const handleEditProperty = (propertyId: number) => {
+    toast({
+      title: "Edit Property",
+      description: "Redirecting to property edit page...",
+    });
+    navigate(`/edit-property/${propertyId}`);
+  };
+
+  const handleViewPropertyDetails = (propertyId: number) => {
+    toast({
+      title: "View Details",
+      description: "Loading property details...",
+    });
+    navigate(`/property-details/${propertyId}`);
   };
 
   const filteredBookings = bookingRequests.filter(booking => {
@@ -181,7 +203,7 @@ const LandlordDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <LandlordDashboardHeader />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
@@ -308,9 +330,11 @@ const LandlordDashboard = () => {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">My Properties</h2>
-                <Button className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add New Property
+                <Button className="flex items-center gap-2" asChild>
+                  <Link to="/post-hostel">
+                    <Plus className="h-4 w-4" />
+                    Add New Property
+                  </Link>
                 </Button>
               </div>
               
@@ -353,11 +377,20 @@ const LandlordDashboard = () => {
                       </div>
                       
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="flex-1">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => handleEditProperty(hostel.id)}
+                        >
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
                         </Button>
-                        <Button size="sm" className="flex-1">
+                        <Button 
+                          size="sm" 
+                          className="flex-1"
+                          onClick={() => handleViewPropertyDetails(hostel.id)}
+                        >
                           <Eye className="h-4 w-4 mr-1" />
                           View Details
                         </Button>

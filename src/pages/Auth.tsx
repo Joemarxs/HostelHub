@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Phone, Building2 } from 'lucide-react';
@@ -12,7 +13,8 @@ import { useToast } from '@/hooks/use-toast';
 
 const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [userType, setUserType] = useState<'student' | 'owner'>('student');
+  const [loginUserType, setLoginUserType] = useState<'student' | 'owner'>('student');
+  const [registerUserType, setRegisterUserType] = useState<'student' | 'owner'>('student');
   const [isLoading, setIsLoading] = useState(false);
   const { login, register } = useAuth();
   const { toast } = useToast();
@@ -41,16 +43,15 @@ const Auth = () => {
     setIsLoading(true);
     
     try {
-      const success = await login(formData.email, formData.password);
+      const success = await login(formData.email, formData.password, loginUserType);
       if (success) {
         toast({
           title: "Login successful!",
           description: "Welcome back to HostelHub Kenya",
         });
         
-        // Redirect based on user type
-        const userType = formData.email.includes('landlord') || formData.email.includes('owner') ? 'owner' : 'student';
-        if (userType === 'owner') {
+        // Redirect based on selected user type
+        if (loginUserType === 'owner') {
           navigate('/landlord-dashboard');
         } else {
           navigate('/student-dashboard');
@@ -88,7 +89,7 @@ const Auth = () => {
     setIsLoading(true);
     
     try {
-      const success = await register({ ...formData, userType });
+      const success = await register({ ...formData, userType: registerUserType });
       if (success) {
         toast({
           title: "Registration successful!",
@@ -96,7 +97,7 @@ const Auth = () => {
         });
         
         // Redirect based on user type
-        if (userType === 'owner') {
+        if (registerUserType === 'owner') {
           navigate('/landlord-dashboard');
         } else {
           navigate('/student-dashboard');
@@ -144,6 +145,28 @@ const Auth = () => {
             
             {/* Login Tab */}
             <TabsContent value="login">
+              <div className="mb-6">
+                <Label>Login as:</Label>
+                <div className="flex gap-4 mt-2">
+                  <Button
+                    type="button"
+                    variant={loginUserType === 'student' ? 'default' : 'outline'}
+                    className="flex-1"
+                    onClick={() => setLoginUserType('student')}
+                  >
+                    Student
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={loginUserType === 'owner' ? 'default' : 'outline'}
+                    className="flex-1"
+                    onClick={() => setLoginUserType('owner')}
+                  >
+                    Hostel Owner
+                  </Button>
+                </div>
+              </div>
+
               <form onSubmit={handleLogin} className="space-y-6">
                 <div>
                   <Label htmlFor="email">Email Address</Label>
@@ -213,17 +236,17 @@ const Auth = () => {
                 <div className="flex gap-4 mt-2">
                   <Button
                     type="button"
-                    variant={userType === 'student' ? 'default' : 'outline'}
+                    variant={registerUserType === 'student' ? 'default' : 'outline'}
                     className="flex-1"
-                    onClick={() => setUserType('student')}
+                    onClick={() => setRegisterUserType('student')}
                   >
                     Student
                   </Button>
                   <Button
                     type="button"
-                    variant={userType === 'owner' ? 'default' : 'outline'}
+                    variant={registerUserType === 'owner' ? 'default' : 'outline'}
                     className="flex-1"
-                    onClick={() => setUserType('owner')}
+                    onClick={() => setRegisterUserType('owner')}
                   >
                     Hostel Owner
                   </Button>
@@ -290,7 +313,7 @@ const Auth = () => {
                 </div>
 
                 {/* Student-specific fields */}
-                {userType === 'student' && (
+                {registerUserType === 'student' && (
                   <>
                     <div>
                       <Label htmlFor="university">University/College</Label>
@@ -317,7 +340,7 @@ const Auth = () => {
                 )}
 
                 {/* Owner-specific fields */}
-                {userType === 'owner' && (
+                {registerUserType === 'owner' && (
                   <>
                     <div>
                       <Label htmlFor="businessName">Business Name</Label>
